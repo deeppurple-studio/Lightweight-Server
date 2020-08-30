@@ -1,1 +1,8 @@
+# Ignore Vim Swap files
+*.swp
+
+# Remove python cache dir
 __pycache__/
+
+# Remove logs dir
+logs/

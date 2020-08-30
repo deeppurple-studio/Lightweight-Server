@@ -12,6 +12,7 @@ test_webpage = """<!DOCTYPE html>
     </body>
 </html>"""
 
+
 def send_answer(conn, status="200 OK", content_type="text/plain; charset=utf-8", data=b""):
     data_length = len(data)
 
@@ -26,8 +27,11 @@ def send_answer(conn, status="200 OK", content_type="text/plain; charset=utf-8",
     conn.send(http_packet)
 
 
-def Handle(conn):
+def Handler(conn):
     raw_data = conn.recv(1024)
+    
+    if not raw_data:
+        return
 
     decode_data = raw_data.decode("utf-8")
     head_request, body_request = decode_data.split("\r\n\r\n", 2)
