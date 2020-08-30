@@ -1,22 +1,18 @@
 import socket
 import select
 
-import handler
+import handlers
 from libs import Logger
 
 
-def accept_connection(sock):
+def acceptConnection(sock):
     conn, addr = sock.accept()
     to_monitor.append(conn)
 
     log.write(f"New connection from {addr[0]}")
 
 
-def handle_connection(sock):
-    handler.Handler(sock)
-
-
-def event_loop():
+def eventLoop():
     while True:
         for sock in to_monitor:
             if sock.fileno == -1:
@@ -27,9 +23,9 @@ def event_loop():
 
         for sock in ready_to_read:
             if sock is server_socket:
-                accept_connection(sock)
+                acceptConnection(sock)
             else:
-                handle_connection(sock)
+                handlers.connectionsHandler(sock)
 
 
 if __name__ == "__main__":
@@ -44,7 +40,7 @@ if __name__ == "__main__":
         server_socket.listen()
 
         to_monitor.append(server_socket)
-        event_loop()
+        eventLoop()
     except Exception as ex:
         import traceback
 
