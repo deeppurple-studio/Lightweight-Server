@@ -1,18 +1,23 @@
 import socket
 import select
 
+import handler
 
-def accept_connections(sock):
+def accept_connection(sock):
     conn, addr = sock.accept()
     to_monitor.append(conn)
 
 
 def handle_connection(sock):
-    print(sock.recv(1024))
+    handler.Handle(sock)
 
 
 def event_loop():
     while True:
+        for sock in to_monitor:
+            if sock.fileno == -1:
+                to_monitor.remove(sock)
+
         ready_to_read = select.select(to_monitor, [], [])[0]
 
         for sock in ready_to_read:
