@@ -13,7 +13,7 @@ def accept_connection(sock):
 
 
 def handle_connection(sock):
-    handler.Handle(sock)
+    handler.Handler(sock)
 
 
 def event_loop():
@@ -34,7 +34,7 @@ def event_loop():
 
 if __name__ == "__main__":
     log = Logger.Log("init", "print")
-    
+
     try:
         to_monitor = []
 

@@ -1,3 +1,8 @@
+from libs import Logger
+
+
+log = Logger.Log("handler", "print,file")
+
 test_webpage = """<!DOCTYPE html>
 <html>
     <head>
@@ -29,7 +34,7 @@ def send_answer(conn, status="200 OK", content_type="text/plain; charset=utf-8",
 
 def Handler(conn):
     raw_data = conn.recv(1024)
-    
+
     if not raw_data:
         return
 
@@ -37,10 +42,10 @@ def Handler(conn):
     head_request, body_request = decode_data.split("\r\n\r\n", 2)
 
     request_title = head_request.split("\r\n")[0]
-    print(request_title, end=";")
+    log.write(request_title)
 
     method, address, protocol = request_title.split(" ", 3)
-    print(protocol)
+    log.write(protocol)
 
     if protocol == "HTTP/1.0" or protocol == "HTTP/1.1":
         if method == "GET":
@@ -54,4 +59,3 @@ def Handler(conn):
             send_answer(conn, status="501 Not Implemented")
     else:
         send_answer(conn, status="505 HTTP Version Not Supported")
-

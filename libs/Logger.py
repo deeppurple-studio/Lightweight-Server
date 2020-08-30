@@ -16,7 +16,7 @@ class Log:
             if not os.path.exists("logs"):
                 os.mkdir("logs")
             self.logFile = open(f"logs/{log_name}.log", "w")
-            self.structurePrintLog = "{flag}[{time}] {string}"
+            self.structureFileLog = "{flag}[{time}] {string}\n"
 
     def write(self, string, flag=""):
         if "print" in self.output_type:
@@ -30,10 +30,10 @@ class Log:
                 print_flag = ""
 
             print(self.structurePrintLog.format(flag=print_flag, log=self.log_name, time=time.strftime(TIME_FORMAT), string=string))
-        else:
+        if "file" in self.output_type:
             if flag:
                 flag = f"{flag}: "
-            self.file.write(self.structurePrintLog.format(flag=flag, time=time.strftime(TIME_FORMAT), string=string))
+            self.logFile.write(self.structureFileLog.format(flag=flag, time=time.strftime(TIME_FORMAT), string=string))
 
     def close(self):
         if "file" in self.output_type:
