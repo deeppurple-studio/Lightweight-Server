@@ -11,11 +11,19 @@ SUPPORT_PROTOCOLS = ("HTTP/1.0", "HTTP/1.1")
 log = Logger.Log("handler", "print,file")
 
 
-def sendAnswer(conn, status="200 OK", content_type="text/plain; charset=utf-8", data=b""):
+def sendAnswer(conn, status="200 OK", content_type=None, redirection=None, data=None):
+    if not content_type:
+        content_type = "text/plain; charset=utf-8"
+
+    if not data:
+        data = b""
+
     data_length = len(data)
 
     answer = f"HTTP/1.1 {status}\r\n"
     answer += "Server: LightServer\r\n"
+    if redirection:
+        answer += f"Location: {redirection}\r\n"
     answer += f"Content-Type: {content_type}\r\n"
     answer += f"Content-Length: {data_length}\r\n"
     answer += "\r\n\r\n"
@@ -39,23 +47,23 @@ def connectionsHandler(conn):
 
     method, address, protocol = request_title.split(" ", 3)
 
-    if protocol in SUPPORT_PROTOCOLS: 
+    if protocol in SUPPORT_PROTOCOLS:
         methodHandler(conn, method, address, body_request)
     else:
-        sendAnswer(conn, status="505 HTTP Version Not Supported")
+        page = pageEngine.getErrorPage("505 HTTP Version Not Supported")
+        sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
 
 
 def methodHandler(conn, method, address, body_request):
-    if method in SUPPORT_METHODS:
-        if method in siteMap.sitePages.keys():
-            # TODO page generator :)
-            pass
-        else:
-            if "404" in siteMap.siteErrorPages.keys() and siteMap.siteErrorPages["404"] != "":
-                sendAnswer(conn, status="404 Not Found", content_type=siteMap.siteErrorPages["404"][0], data=pageEngine.readFile(siteMap.siteErrorPages["404"][1]))
-            sendAnswer(conn, status="404 Not Found")
-        #if address == "/" or address == "/index":
-        #    send_answer(conn, content_type="text/html; charset=utf-8", data=test_webpage.encode("utf-8"))
-    else:
-        sendAnswer(conn, status="501 Not Implemented")
+    if method in SUPPORT_METHODS and method in siteMap.sitePages.keys():
+            if address == "/" or address == "/index":
+                # TODO page generator :)
+                sendAnswer(conn, content_type="text/html; charset=utf-8", data="<h1>Hi</h1>".encode("utf-8"))
+ 
+            else:
+                page = pageEngine.getErrorPage("404 Not Found")
+                sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
 
+    else:
+        page = pageEngine.getErrorPage("501 Not Implemented")
+        sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
