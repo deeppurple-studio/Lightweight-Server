@@ -8,11 +8,6 @@ from libs import Logger
 log = Logger.Log("page engine", "print")
 
 
-def checkSiteIndex():
-    # TODO: create checking site index
-    pass
-
-
 def getErrorPage(err_code):
     content_type = None
     data = None
@@ -26,13 +21,13 @@ def getErrorPage(err_code):
         else:
             log.write(f"Error file [{err_code}] not found!", "W")
 
-    return { "status":err_code, "content_type":content_type, "data":data }
+    return {"status": err_code, "content_type": content_type, "data": data}
 
 
 def readFile(filename):
-    if os.path.exists(filename):
-        with open(filename, "rb") as file_descryptor:
-            data = file_descryptor.read()
+    if os.path.exists(f"{siteMap.siteDirectory}{filename}"):
+        with open(f"{siteMap.siteDirectory}{filename}", "rb") as file_:
+            data = file_.read()
         return data
     else:
         return None
