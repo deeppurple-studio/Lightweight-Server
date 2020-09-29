@@ -33,7 +33,14 @@ def sendAnswer(conn, status="200 OK", content_type=None, redirection=None, data=
 
 
 def connectionsHandler(conn):
-    raw_data = conn.recv(1024)
+    raw_data = b""
+
+    while True:
+        part = conn.recv(1024)
+        raw_data += part
+
+        if len(part) < 1024:
+            break
 
     if not b"\r\n\r\n" in raw_data:
         return
