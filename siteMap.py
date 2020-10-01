@@ -1,3 +1,5 @@
+import view
+
 siteDirectory = "WWW/"
 
 
@@ -15,6 +17,7 @@ sitePages = {
         #   "function" - execute function and send data (from return) to client
 
         "/index.html": ("file", "text/html;charset=utf-8", "index.html"),
-        "/": ("redirection", "/index.html")
+        "/": ("redirection", "/index.html"),
+        "/about": ("function", view.about)
     }
-} 
+}

@@ -8,13 +8,18 @@ from libs import Logger
 log = Logger.Log("page engine", "print")
 
 
+def generateHTTPAnswer(status="200 OK", content_type=None, redirection=None, data=None):
+    return {"status": status, "content_type": content_type, "redirection": redirection, "data": data}
+
+
+# Работа с файлами
 def getErrorPage(err_code):
     content_type = None
     data = None
 
     if err_code in siteMap.siteErrorPages.keys():
         error_page_file = readFile(siteMap.siteErrorPages[err_code][1])
- 
+
         if error_page_file:
             content_type = siteMap.siteErrorPages[err_code][0]
             data = error_page_file

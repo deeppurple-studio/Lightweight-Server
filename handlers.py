@@ -42,7 +42,7 @@ def connectionsHandler(conn):
         if len(part) < 1024:
             break
 
-    if not b"\r\n\r\n" in raw_data:
+    if b"\r\n\r\n" not in raw_data:
         return
 
     head, body_request = raw_data.split(b"\r\n\r\n", 2)
@@ -67,28 +67,34 @@ def connectionsHandler(conn):
 def methodHandler(conn, method, address, head_request, body_request):
     log.write(f"Method: {method}, Addr: {address}")
     if method in siteMap.sitePages.keys():
-            if address in siteMap.sitePages[method].keys():
-                page_info = siteMap.sitePages[method][address]
+        if address in siteMap.sitePages[method].keys():
+            page_info = siteMap.sitePages[method][address]
 
-                if len(page_info) > 1:
-                    if page_info[0] == "file" and len(page_info) == 3:
-                        file_ = pageEngine.readFile(page_info[2])
+            if len(page_info) > 1:
+                if page_info[0] == "file" and len(page_info) == 3:
+                    file_ = pageEngine.readFile(page_info[2])
 
-                        if file_ is None:
-                            page = pageEngine.getErrorPage("404 Not Found")
-                            sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
-                        else:
-                            sendAnswer(conn, content_type=page_info[1], data=pageEngine.readFile(page_info[2]))
-                    elif page_info[0] == "redirection" and len(page_info) == 2:
-                        sendAnswer(conn, status="308 Permanent Redirect", redirection=page_info[1])
-                    elif page_info[0] == "function" and len(page_info) == 2:
-                        #page_data = page_info[1]()
-                        #sendAnswer()
-                        pass
+                    if file_ is None:
+                        page = pageEngine.getErrorPage("404 Not Found")
+                        sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
+                    else:
+                        sendAnswer(conn, content_type=page_info[1], data=pageEngine.readFile(page_info[2]))
+                elif page_info[0] == "redirection" and len(page_info) == 2:
+                    sendAnswer(conn, status="308 Permanent Redirect", redirection=page_info[1])
+                elif page_info[0] == "function" and len(page_info) == 2:
+                    try:
+                        page_data = page_info[1](head_request, body_request)
+                    except TypeError:
+                        page_data = page_info[1]()
 
-            else:
-                page = pageEngine.getErrorPage("404 Not Found")
-                sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
+                    if type(page_data) is dict:
+                        sendAnswer(conn, **page_data)
+                    else:
+                        sendAnswer(conn, *page_data)
+
+        else:
+            page = pageEngine.getErrorPage("404 Not Found")
+            sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
 
     else:
         page = pageEngine.getErrorPage("501 Not Implemented")
