@@ -1,7 +1,6 @@
 import os
 
 import siteMap
-
 from libs import Logger
 
 
@@ -13,6 +12,14 @@ def generateHTTPAnswer(status="200 OK", content_type=None, redirection=None, dat
 
 
 # Работа с файлами
+def getTemplate(filename):
+    if os.path.exists(f"{siteMap.siteDirectory}templates"):
+        return readFile(f"templates/{filename}")
+    else:
+        log.write(f"Template folder not found!", "W")
+        return None
+
+
 def getErrorPage(err_code):
     content_type = None
     data = None

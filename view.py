@@ -1,8 +1,11 @@
-from pageEngine import generateHTTPAnswer
+from pageEngine import generateHTTPAnswer, getTemplate
 
 
 def about(head, body):
-    data = "<!DOCTYPE html><html><body><h1>About</h1><div>{}</div><div>{}</div></body></html>"
-    data = data.format(head, body)
+    data = getTemplate("about.html")
 
-    return generateHTTPAnswer(content_type="text/html; charset=utf-8", data=data.encode())
+    if data is not None:
+        data = data.decode().format(head=head, body=body)
+        return generateHTTPAnswer(content_type="text/html; charset=utf-8", data=data.encode())
+    else:
+        return generateHTTPAnswer(status="404 Not Found", data=b"")
