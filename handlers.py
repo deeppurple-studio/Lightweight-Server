@@ -1,4 +1,4 @@
-import siteMap
+import serverMap
 import pageEngine
 
 from libs import Logger
@@ -66,9 +66,9 @@ def connectionsHandler(conn):
 
 def methodHandler(conn, method, address, head_request, body_request):
     log.write(f"Method: {method}, Addr: {address}")
-    if method in siteMap.sitePages.keys():
-        if address in siteMap.sitePages[method].keys():
-            page_info = siteMap.sitePages[method][address]
+    if method in serverMap.sitePages.keys():
+        if address in serverMap.sitePages[method].keys():
+            page_info = serverMap.sitePages[method][address]
 
             if len(page_info) > 1:
                 if page_info[0] == "file" and len(page_info) == 3:
