@@ -48,9 +48,9 @@ def about():
     # Данные обязательно должны конвертированы в строке байтов
     return generateHTTPAnswer(content_type="text/html", data=send_data.encode())
 ```
-Далее в файл `siteMap.py`, в словарь `sitePages`, должна быть помещена строка в соответствии с методом (GET, POST и др.), который вы хотите использовать:
+Далее в файл `serverMap.py`, в словарь `sitePages`, должна быть помещена строка в соответствии с методом (GET, POST и др.), который вы хотите использовать:
 ```
-# siteMap.py
+# serverMap.py
 import view
 ...
 sitePages = {

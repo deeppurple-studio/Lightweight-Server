@@ -31,7 +31,7 @@ def getErrorPage(err_code):
             content_type = serverConfig.siteErrorPages[err_code][0]
             data = error_page_file
         else:
-            log.write(f"Error file [{err_code}] not found!", "W")
+            log.write(f"HTTP error file [{err_code}] not found!", "W")
 
     return {"status": err_code, "content_type": content_type, "data": data}
 
