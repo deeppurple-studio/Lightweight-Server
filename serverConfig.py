@@ -1,7 +1,17 @@
+# --- Глобальные настройки ---
+SERVER_ON_PORT = 443
+
+USE_SSL = True
+
+SSL_KEYFILE = "certificate/server.key"
+SSL_CERTFILE = "certificate/server.crt"
+
+
+# --- Настройки сайта ---
 import view
 
-siteDirectory = "WWW/"
 
+siteDirectory = "WWW/"
 
 # {"error_number": ("content_type", "path")}
 siteErrorPages = {
@@ -9,7 +19,7 @@ siteErrorPages = {
 }
 
 # {"method": {"page_address": ("type", "content_type", "path")}}
-sitePages = {
+siteMap = {
     "GET": {
         # If type:
         #   "file" - read data from file and send to client

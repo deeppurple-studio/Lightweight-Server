@@ -1,6 +1,6 @@
 import os
 
-import siteMap
+import serverConfig
 from libs import Logger
 
 
@@ -13,7 +13,7 @@ def generateHTTPAnswer(status="200 OK", content_type=None, redirection=None, dat
 
 # Работа с файлами
 def getTemplate(filename):
-    if os.path.exists(f"{siteMap.siteDirectory}templates"):
+    if os.path.exists(f"{serverConfig.siteDirectory}templates"):
         return readFile(f"templates/{filename}")
     else:
         log.write(f"Template folder not found!", "W")
@@ -24,11 +24,11 @@ def getErrorPage(err_code):
     content_type = None
     data = None
 
-    if err_code in siteMap.siteErrorPages.keys():
-        error_page_file = readFile(siteMap.siteErrorPages[err_code][1])
+    if err_code in serverConfig.siteErrorPages.keys():
+        error_page_file = readFile(serverConfig.siteErrorPages[err_code][1])
 
         if error_page_file:
-            content_type = siteMap.siteErrorPages[err_code][0]
+            content_type = serverConfig.siteErrorPages[err_code][0]
             data = error_page_file
         else:
             log.write(f"Error file [{err_code}] not found!", "W")
@@ -37,8 +37,8 @@ def getErrorPage(err_code):
 
 
 def readFile(filename):
-    if os.path.exists(f"{siteMap.siteDirectory}{filename}"):
-        with open(f"{siteMap.siteDirectory}{filename}", "rb") as file_:
+    if os.path.exists(f"{serverConfig.siteDirectory}{filename}"):
+        with open(f"{serverConfig.siteDirectory}{filename}", "rb") as file_:
             data = file_.read()
         return data
     else:

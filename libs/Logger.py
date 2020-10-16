@@ -15,7 +15,7 @@ class Log:
         if "file" in self.output_type:
             if not os.path.exists("logs"):
                 os.mkdir("logs")
-            self.logFile = open(f"logs/{log_name}.log", "w")
+            self.logFile = open(f"logs/{log_name}.log", "a")
             self.structureFileLog = "{flag}[{time}] {string}\n"
 
     def write(self, string, flag=""):
