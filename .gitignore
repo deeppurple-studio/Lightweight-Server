@@ -4,5 +4,8 @@
 # Remove python cache dir
 __pycache__/
 
+# Remove certificate files
+certificate/
+
 # Remove logs dir
 logs/

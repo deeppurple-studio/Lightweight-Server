@@ -1,23 +1,30 @@
 import socket
+import ssl
 import select
 
+import serverConfig
 import handlers
 from libs import Logger
 
 
 def acceptConnection(sock):
-    conn, addr = sock.accept()
-    to_monitor.append(conn)
-
-    log.write(f"New connection from {addr[0]}")
+    # Принимаем входящие подключения
+    try:
+        conn, addr = sock.accept()
+    except ssl.SSLError:
+        log.write("TLSv1 alert: unknown CA!\n | You certificate self-signed?\n | Please do use trusted Certificate center", "W")
+    else:
+        to_monitor.append(conn)
+        log.write(f"New connection from {addr[0]}")
 
 
 def eventLoop():
     while True:
         for sock in to_monitor:
+            # Очищаем список от сокетов с плохим дескриптором
             if sock.fileno == -1:
                 to_monitor.remove(sock)
-                log.write("Remove socket with bad file descryptor", "W")
+                log.write("Remove socket with bad file descryptor")
 
         ready_to_read = select.select(to_monitor, [], [])[0]
 
@@ -34,9 +41,14 @@ if __name__ == "__main__":
     try:
         to_monitor = []
 
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if serverConfig.USE_SSL:
+            server_socket = ssl.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM), serverConfig.SSL_KEYFILE, serverConfig.SSL_CERTFILE, True)
+        else:
+            server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        # Даем возможность переиспользовать адрес
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
-        server_socket.bind(("0.0.0.0", 80))
+        server_socket.bind(("0.0.0.0", serverConfig.SERVER_ON_PORT))
         server_socket.listen()
 
         to_monitor.append(server_socket)
