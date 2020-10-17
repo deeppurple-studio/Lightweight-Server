@@ -49,13 +49,12 @@ def about():
     return generateHTTPAnswer(content_type="text/html", data=send_data.encode())
 ```
 
-Далее в файл `siteMap.py`, в словарь `sitePages`, должна быть помещена строка в соответствии с методом (GET, POST и др.), который вы хотите использовать:
+Далее в файл `serverConfig.py`, в словарь `siteMap`, должна быть помещена строка в соответствии с методом (GET, POST и др.), который вы хотите использовать:
 ```python
-# siteMap.py
-
+# serverConfig.py
 import view
 ...
-sitePages = {
+siteMap = {
     "GET": {
         ...
         "/about": ("function", view.about)
