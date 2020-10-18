@@ -6,11 +6,13 @@ from libs import Logger
 
 SUPPORT_PROTOCOLS = ("HTTP/1.0", "HTTP/1.1")
 
-
 log = Logger.Log("handler", "print,file")
 
 
 def sendAnswer(conn, status="200 OK", content_type=None, redirection=None, data=None):
+    """
+    Отправляем данные клиенту.
+    """
     if content_type is None:
         content_type = "text/plain; charset=utf-8"
 
@@ -32,7 +34,11 @@ def sendAnswer(conn, status="200 OK", content_type=None, redirection=None, data=
     conn.send(http_packet)
 
 
-def connectionsHandler(conn):
+def parseHandler(conn):
+    """
+    Получаем и парсим данные (делим на заголовок и тело запроса),
+    передаем methodHandler для дальнейших действий.
+    """
     raw_data = b""
 
     while True:
@@ -65,7 +71,7 @@ def connectionsHandler(conn):
 
 
 def methodHandler(conn, method, address, head_request, body_request):
-    log.write(f"Method: {method}, Addr: {address}")
+    log.write(f"Requested method: {method}, addr: {address}")
     if method in serverConfig.siteMap.keys():
         if address in serverConfig.siteMap[method].keys():
             page_info = serverConfig.siteMap[method][address]
