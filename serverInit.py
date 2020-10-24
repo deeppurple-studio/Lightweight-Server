@@ -13,9 +13,10 @@ def acceptConnection(sock):
         conn, addr = sock.accept()
     except ssl.SSLError as ex:
         err_str = ""
-        for arg in ex.args:
-            if type(arg) is str:
-                err_str += arg
+
+        for item in ex.args:
+            if type(item) is str:
+                err_str += item
 
         if "[SSL: TLSV1_ALERT_UNKNOWN_CA]" in err_str:
             # Если у вас самоподписанный сертификат
@@ -23,7 +24,9 @@ def acceptConnection(sock):
         elif "[SSL: WRONG_VERSION_NUMBER]" in err_str:
             pass
         else:
-            pass
+            log.write(f"{err_str}", "W")
+    except Exception as ex:
+        log.write(f"Err: {ex}")
     else:
         to_monitor.append(conn)
         log.write(f"New connection from {addr[0]}")
