@@ -17,19 +17,19 @@
 * siteErrorPages - словарь с путями к HTML страницам HTTP ошибок. Имеет следующий вид:
 ```python
 {
-    "<код HTTP ошибки>": ("<тип содержимого>", "<путь до HTML файла>")
+    "<код HTTP ошибки>": ("<MIME тип содержимого>", "<путь до HTML файла>")
 }
 ```
 * sitePages - словарь с путями до файлов.
 ```python
 {
     "<HTTP метод>": {
-        "<URL>": ("<тип>", *<аргументы>)
+        "<URL>": ("<тип представления>", *<аргументы>)
     }
 }
 ```
-В случае, если используется HTTP метод GET, то аргументы могут быть:
-* Если тип `file` - `"<тип содержимого файла>", "<путь до локального файла>"`
+В случае, если используется HTTP метод GET, то аргументы выглядят так:
+* Если тип `file` - `"<MIME тип содержимого>", "<путь до локального файла>"`
 * Если тип `redirection` - `"<адрес в сети или URL>"`
 * Если тип `function` - `"<функция обработки запроса>"`
 
@@ -43,19 +43,17 @@ from pageEngine import generateHTTPAnswer
 
 def about():
     # Можно добавить два аргумента в функцию и получить запросы HEAD и BODY
-    send_data = "<h1>About</h1>"
+    send_data = "<h1>About</h1>".encode()  # Данные обязательно должны конвертированы в строке байтов
 
-    # Данные обязательно должны конвертированы в строке байтов
-    return generateHTTPAnswer(content_type="text/html", data=send_data.encode())
+    return generateHTTPAnswer(content_type="text/html", data=send_data)
 ```
 
-Далее в файл `siteMap.py`, в словарь `sitePages`, должна быть помещена строка в соответствии с методом (GET, POST и др.), который вы хотите использовать:
+Далее в файл `serverConfig.py`, в словарь `siteMap`, должна быть помещена строка в соответствии с методом (GET, POST и др.), который вы хотите использовать:
 ```python
-# siteMap.py
-
+# serverConfig.py
 import view
 ...
-sitePages = {
+siteMap = {
     "GET": {
         ...
         "/about": ("function", view.about)

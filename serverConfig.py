@@ -1,30 +1,32 @@
-# --- Глобальные настройки ---
-SERVER_ON_PORT = 443
-
-USE_SSL = True
-
-SSL_KEYFILE = "certificate/server.key"
-SSL_CERTFILE = "certificate/server.crt"
-
-
-# --- Настройки сайта ---
 import view
 
 
+# --- Глобальные настройки ---
+SERVER_ON_PORT = 443  # Порт, на котором висит сервер
+
+USE_SSL = True  # Флаг включения поддержки шифрования (TLS)
+
+SSL_KEYFILE = "certificate/server.key"  # Путь до key-файла
+SSL_CERTFILE = "certificate/server.crt"  # Путь до файла-сертификата
+
+
+# --- Настройки сайта ---
 siteDirectory = "WWW/"
 
-# {"error_number": ("content_type", "path")}
+# Список ошибок и путь до HTML файла
+# {"<HTTP ошибка>": ("<MIME тип содержимого>", "<путь до файла>")}
 siteErrorPages = {
     "404 Not Found": ("text/html;charset=utf-8", "errors/404.html")
 }
 
-# {"method": {"page_address": ("type", "content_type", "path")}}
+# Карта сайта
+# {"<метод>": {"<URL>": ("<тип представления>", <аргументы>)}}
 siteMap = {
     "GET": {
-        # If type:
-        #   "file" - read data from file and send to client
-        #   "redirection" - send redirect address to client
-        #   "function" - execute function and send data (from return) to client
+        # Если тип:
+        #   "file" - считываем данные из файла и отправляем клиенту
+        #   "redirection" - отправляем адрес перенаправления клиенту
+        #   "function" - выполняем функцию и отправляем ее результат
 
         "/index.html": ("file", "text/html;charset=utf-8", "index.html"),
         "/": ("redirection", "/index.html"),

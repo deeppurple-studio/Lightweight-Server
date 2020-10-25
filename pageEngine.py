@@ -8,7 +8,14 @@ log = Logger.Log("page engine", "print")
 
 
 def generateHTTPAnswer(status="200 OK", content_type=None, redirection=None, data=None):
-    return {"status": status, "content_type": content_type, "redirection": redirection, "data": data}
+    answer = {
+        "status": status,
+        "content_type": content_type,
+        "redirection": redirection,
+        "data": data
+    }
+
+    return answer
 
 
 # Работа с файлами
