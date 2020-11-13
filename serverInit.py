@@ -22,10 +22,14 @@ def acceptConnection(sock):
             # Если у вас самоподписанный сертификат
             log.write("TLSv1 alert: unknown CA!\n | You certificate self-signed?\n | Please do use trusted Certificate center", "W")
         elif "[SSL: WRONG_VERSION_NUMBER]" in err_str:
+            # Перехватываем ошибку, если клиент использует другой протокол (SSL вместо TLS)
             pass
         else:
+            # HACK: переват ошибок связанных с SSL
             log.write(f"{err_str}", "W")
     except Exception as ex:
+        # TOFIX: по хорошему, мы не должны перехватывать все ошибки,
+        # связанные с сокетами. Сделано для отладки и что бы сервер не крашился
         log.write(f"Err: {ex}")
     else:
         to_monitor.append(conn)
@@ -35,7 +39,7 @@ def acceptConnection(sock):
 def eventLoop():
     while True:
         for sock in to_monitor:
-            # Очищаем список от сокетов с плохим дескриптором
+            # Очищаем список от сокетов с закрытым дескриптором
             if sock.fileno == -1:
                 to_monitor.remove(sock)
                 log.write("Remove socket with bad file descryptor")
