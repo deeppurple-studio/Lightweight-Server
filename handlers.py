@@ -27,7 +27,7 @@ def sendAnswer(conn, status="200 OK", content_type=None, redirection=None, data=
         answer += f"Location: {redirection}\r\n"
     answer += f"Content-Type: {content_type}\r\n"
     answer += f"Content-Length: {data_length}\r\n"
-    answer += "\r\n\r\n"
+    answer += "\r\n"
 
     http_packet = answer.encode("utf-8") + data
 
