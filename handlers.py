@@ -91,6 +91,7 @@ def methodHandler(conn, method, address, head_request, body_request):
                     try:
                         page_data = page_info[1](head_request, body_request)
                     except TypeError:
+                        log.write("Handler function arguments is empty", "W")
                         page_data = page_info[1]()
 
                     if type(page_data) is dict:
