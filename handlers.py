@@ -88,11 +88,13 @@ def methodHandler(conn, method, address, head_request, body_request):
                 elif page_info[0] == "redirection" and len(page_info) == 2:
                     sendAnswer(conn, status="308 Permanent Redirect", redirection=page_info[1])
                 elif page_info[0] == "function" and len(page_info) == 2:
-                    try:
+                    if page_info[1].__code__.co_argcount == 2:
                         page_data = page_info[1](head_request, body_request)
-                    except TypeError:
+                    elif page_info[1].__code__.co_argcount == 0:
                         log.write("Handler function arguments is empty", "W")
                         page_data = page_info[1]()
+                    else:
+                        raise TypeError
 
                     if type(page_data) is dict:
                         sendAnswer(conn, **page_data)
