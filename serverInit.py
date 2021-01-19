@@ -50,7 +50,10 @@ def eventLoop():
             if sock is server_socket:
                 acceptConnection(sock)
             else:
-                handlers.parseHandler(sock)
+                try:
+                    handlers.parseHandler(sock)
+                except socket.error:
+                    log.write("Connection reset by peer", "W")
 
 
 if __name__ == "__main__":
