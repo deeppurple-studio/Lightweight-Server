@@ -1,5 +1,7 @@
 import os
 
+import magic
+
 import serverConfig
 from libs import Logger
 
@@ -24,6 +26,31 @@ def getTemplate(filename):
         return readFile(f"templates/{filename}")
     else:
         log.write(f"Template folder not found!", "W")
+        return None
+
+
+def generateFilesTreeFromFolder(folder):
+    """
+    Вывод всех путей до файлов в папке
+    """
+    if os.path.exists(f"{serverConfig.siteDirectory}{folder}"):
+        filesInTree = {}
+        mime = magic.Magic(mime=True)
+
+        for path, folders, filesList in os.walk(f"{serverConfig.siteDirectory}{folder}"):
+            for fileName in filesList:
+                fullFilePath = f"{path}/{fileName}".replace("//", "/")
+                relFilePath = fullFilePath.replace(f"{serverConfig.siteDirectory}", "")
+
+                if fileName.split(".")[-1] == "css":                                                                                                   
+                    mimeType = "text/css"
+                else:
+                    mimeType = mime.from_file(fullFilePath)
+
+                filesInTree.update({f"/{relFilePath}": ("file", mimeType, f"{relFilePath}")})
+        return filesInTree
+    else:
+        log.write("Can't create folder tree!", "W")
         return None
 
 

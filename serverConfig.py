@@ -1,4 +1,5 @@
 import view
+import pageEngine
 
 
 # --- Глобальные настройки ---
@@ -33,3 +34,6 @@ siteMap = {
         "/about": ("function", view.about)
     }
 }
+
+# Для добавления целой папки в карту сайта:
+#siteMap["GET"].update(pageEngine.generateFilesTreeFromFolder("<путь_до_папки_внутри_siteDirectory>"))
