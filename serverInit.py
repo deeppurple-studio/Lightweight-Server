@@ -11,6 +11,7 @@ def acceptConnection(sock):
     # Принимаем входящие подключения
     try:
         conn, addr = sock.accept()
+        conn.setblocking(0)
     except ssl.SSLError as ex:
         err_str = ""
 
@@ -36,12 +37,19 @@ def acceptConnection(sock):
         log.write(f"New connection from {addr[0]}")
 
 
+def clearResource(sock):
+    sock.close()
+    if sock in to_monitor:
+        to_monitor.remove(sock)
+
+
 def eventLoop():
     while True:
         for sock in to_monitor:
             # Очищаем список от сокетов с закрытым дескриптором
-            if sock.fileno == -1:
-                to_monitor.remove(sock)
+            if sock.fileno() == -1:
+                clearResource(sock)
+
                 log.write("Remove socket with bad file descryptor")
 
         ready_to_read = select.select(to_monitor, [], [])[0]
@@ -52,7 +60,8 @@ def eventLoop():
             else:
                 try:
                     handlers.parseHandler(sock)
-                except socket.error:
+                    clearResource(sock)
+                except ConnectionResetError:
                     log.write("Connection reset by peer", "W")
 
 
@@ -71,6 +80,7 @@ if __name__ == "__main__":
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
         server_socket.bind(("0.0.0.0", serverConfig.SERVER_ON_PORT))
         server_socket.listen()
+        server_socket.setblocking(0)
 
         to_monitor.append(server_socket)
         eventLoop()
