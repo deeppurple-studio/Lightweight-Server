@@ -4,6 +4,7 @@ import select
 
 import serverConfig
 import handlers
+import view
 from libs import Logger
 
 
@@ -33,26 +34,26 @@ def acceptConnection(sock):
         # связанные с сокетами. Сделано для отладки и что бы сервер не крашился
         log.write(f"Err: {ex}")
     else:
-        to_monitor.append(conn)
-        log.write(f"New connection from {addr[0]}")
+        sockets_to_monitor.append(conn)
+        log.write(f"Новое подключение с адреса {addr[0]}")
 
 
 def clearResource(sock):
     sock.close()
-    if sock in to_monitor:
-        to_monitor.remove(sock)
+    if sock in sockets_to_monitor:
+        sockets_to_monitor.remove(sock)
 
 
 def eventLoop():
     while True:
-        for sock in to_monitor:
+        for sock in sockets_to_monitor:
             # Очищаем список от сокетов с закрытым дескриптором
             if sock.fileno() == -1:
                 clearResource(sock)
 
-                log.write("Remove socket with bad file descryptor")
+                log.write("\"Плохой\" дескриптор обнаружен и удален")
 
-        ready_to_read = select.select(to_monitor, [], [])[0]
+        ready_to_read = select.select(sockets_to_monitor, [], [])[0]
 
         for sock in ready_to_read:
             if sock is server_socket:
@@ -62,14 +63,14 @@ def eventLoop():
                     handlers.parseHandler(sock)
                     clearResource(sock)
                 except ConnectionResetError:
-                    log.write("Connection reset by peer", "W")
+                    log.write("Подключение закрыто со стороны клиента", "W")
 
 
 if __name__ == "__main__":
     log = Logger.Log("init", output_type="console")
 
     try:
-        to_monitor = []
+        sockets_to_monitor = []
 
         if serverConfig.USE_SSL:
             server_socket = ssl.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM), serverConfig.SSL_KEYFILE, serverConfig.SSL_CERTFILE, True)
@@ -82,7 +83,7 @@ if __name__ == "__main__":
         server_socket.listen()
         server_socket.setblocking(0)
 
-        to_monitor.append(server_socket)
+        sockets_to_monitor.append(server_socket)
         eventLoop()
     except Exception as ex:
         import traceback

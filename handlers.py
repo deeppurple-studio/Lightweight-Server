@@ -66,22 +66,23 @@ def parseHandler(conn):
 
         methodHandler(conn, method, address, head_request, body_request)
     else:
-        page = pageEngine.getErrorPage("505 HTTP Version Not Supported")
+        page = pageEngine.generateErrorAnswerFromFile("505 HTTP Version Not Supported")
         sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
 
 
 def methodHandler(conn, method, address, head_request, body_request):
-    log.write(f"Requested method: {method}, addr: {address}")
-    if method in serverConfig.siteMap.keys():
-        if address in serverConfig.siteMap[method].keys():
-            page_info = serverConfig.siteMap[method][address]
+    log.write(f"Запрошен адрес {address} с методом {method}")
+
+    if method in serverConfig.SITE_STRUCTURE.keys():
+        if address in serverConfig.SITE_STRUCTURE[method].keys():
+            page_info = serverConfig.SITE_STRUCTURE[method][address]
 
             if len(page_info) > 1:
                 if page_info[0] == "file" and len(page_info) == 3:
                     file_ = pageEngine.readFile(page_info[2])
 
                     if file_ is None:
-                        page = pageEngine.getErrorPage("404 Not Found")
+                        page = pageEngine.generateErrorAnswerFromFile("404 Not Found")
                         sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
                     else:
                         sendAnswer(conn, content_type=page_info[1], data=pageEngine.readFile(page_info[2]))
@@ -102,9 +103,9 @@ def methodHandler(conn, method, address, head_request, body_request):
                         sendAnswer(conn, *page_data)
 
         else:
-            page = pageEngine.getErrorPage("404 Not Found")
+            page = pageEngine.generateErrorAnswerFromFile("404 Not Found")
             sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
 
     else:
-        page = pageEngine.getErrorPage("501 Not Implemented")
+        page = pageEngine.generateErrorAnswerFromFile("501 Not Implemented")
         sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])

@@ -10,7 +10,7 @@ class Log:
         self.output_type = output_type.replace(" ", "").split(",")
 
         if "console" in self.output_type:
-            print("--- LOG [{self.log_name}] START ---")
+            print(f"--- LOG [{self.log_name}] START ---")
 
         if "file" in self.output_type:
             if not os.path.exists("logs"):
@@ -33,10 +33,10 @@ class Log:
         if "file" in self.output_type:
             if flag:
                 flag = f"{flag}: "
-            self.logFile.write(self.line_sructure.format(flag=flag, log_name=self.log_name, time=time.strftime(self.time_structure), log_message=message)+"\n")
+            self.logFile.write(self.line_structure.format(flag=flag, log_name=self.log_name, time=time.strftime(self.time_structure), log_message=message)+"\n")
 
     def close(self):
         if "file" in self.output_type:
             self.logFile.close()
         if "console" in self.output_type:
-            print(f"--- (LOG {self.log_name} END) ---")
+            print(f"--- LOG [{self.log_name}] END ---")

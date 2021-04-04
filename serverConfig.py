@@ -1,28 +1,24 @@
-import view
-import pageEngine
-
-
 # --- Глобальные настройки ---
-SERVER_ON_PORT = 443  # Порт, на котором висит сервер
+SERVER_ON_PORT = 8080  # Порт, на котором висит сервер
 
-USE_SSL = True  # Флаг включения поддержки шифрования (TLS)
+USE_SSL = False  # Флаг включения поддержки шифрования (TLS)
 
 SSL_KEYFILE = "certificate/server.key"  # Путь до key-файла
 SSL_CERTFILE = "certificate/server.crt"  # Путь до файла-сертификата
 
 
 # --- Настройки сайта ---
-siteDirectory = "WWW/"
+SITE_DIR = "WWW/"
 
 # Список ошибок и путь до HTML файла
 # {"<HTTP ошибка>": ("<MIME тип содержимого>", "<путь до файла>")}
-siteErrorPages = {
+SITE_ERROR_FILES = {
     "404 Not Found": ("text/html;charset=utf-8", "errors/404.html")
 }
 
-# Карта сайта
+# Структура сайта
 # {"<метод>": {"<URL>": ("<тип представления>", <аргументы>)}}
-siteMap = {
+SITE_STRUCTURE = {
     "GET": {
         # Если тип:
         #   "file" - считываем данные из файла и отправляем клиенту
@@ -31,9 +27,8 @@ siteMap = {
 
         "/index.html": ("file", "text/html;charset=utf-8", "index.html"),
         "/": ("redirection", "/index.html"),
-        "/about": ("function", view.about)
     }
 }
 
-# Для добавления целой папки в карту сайта (автоматическое обновление не работает, требуется перезапуск сервера):
-#siteMap["GET"].update(pageEngine.generateFilesTreeFromFolder("<путь_до_папки_внутри_siteDirectory>"))
+# Используем ли библиотеку для автоматического определения MIME-типа файла
+USE_MAGIC_LIB = False
