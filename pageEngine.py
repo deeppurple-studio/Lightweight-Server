@@ -6,7 +6,7 @@ import serverConfig
 from libs import Logger
 
 
-log = Logger.Log("page engine", "print")
+log = Logger.Log("page engine", output_type="console")
 
 
 def generateHTTPAnswer(status="200 OK", content_type=None, redirection=None, data=None):

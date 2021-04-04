@@ -66,7 +66,7 @@ def eventLoop():
 
 
 if __name__ == "__main__":
-    log = Logger.Log("init", "print")
+    log = Logger.Log("init", output_type="console")
 
     try:
         to_monitor = []

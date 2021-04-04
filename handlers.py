@@ -6,7 +6,7 @@ from libs import Logger
 
 SUPPORT_PROTOCOLS = ("HTTP/1.0", "HTTP/1.1")
 
-log = Logger.Log("handler", "print,file")
+log = Logger.Log("handler", output_type="console,file")
 
 
 def sendAnswer(conn, status="200 OK", content_type=None, redirection=None, data=None):
