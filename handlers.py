@@ -9,7 +9,8 @@ SUPPORT_PROTOCOLS = ("HTTP/1.0", "HTTP/1.1")
 log = Logger.Log("handler", output_type="console,file")
 
 
-def sendAnswer(conn, status="200 OK", content_type=None, redirection=None, data=None):
+def sendAnswer(conn, status="200 OK", content_type=None, redirection=None,
+               data=None):
     """
     Отправляем данные клиенту.
     """
@@ -34,10 +35,15 @@ def sendAnswer(conn, status="200 OK", content_type=None, redirection=None, data=
     conn.send(http_packet)
 
 
-def parseHandler(conn):
+def getDataFromClientHandler(conn):
     """
-    Получаем и парсим данные (делим на заголовок и тело запроса),
+    Первое вхождение после подключения к клиенту.
+
+    Получаем, делим на заголовок и тело запроса,
     передаем methodHandler для дальнейших действий.
+
+    Принимает:
+      conn - сокет с подключением к клиенту.
     """
     raw_data = b""
 
@@ -45,6 +51,8 @@ def parseHandler(conn):
         part = conn.recv(1024)
         raw_data += part
 
+        # FIXME: Не правильно отбрасывать часть данных,
+        # которая меньше 1024 байт
         if len(part) < 1024:
             break
 
@@ -64,13 +72,17 @@ def parseHandler(conn):
         if "?" in address:
             address, head_request = address.split("?", 2)
 
-        methodHandler(conn, method, address, head_request, body_request)
+        defineMethodHandler(conn, method, address, head_request, body_request)
     else:
         page = pageEngine.generateErrorAnswerFromFile("505 HTTP Version Not Supported")
         sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
 
 
-def methodHandler(conn, method, address, head_request, body_request):
+def defineMethodHandler(conn, method, address, head_request, body_request):
+    """
+    Определяем метод, через который сделал запрос клиент,
+    ведем поиск и передачу запрошенных данных.
+    """
     log.write(f"Запрошен адрес {address} с методом {method}")
 
     if method in serverConfig.SITE_STRUCTURE.keys():
@@ -86,14 +98,22 @@ def methodHandler(conn, method, address, head_request, body_request):
                         sendAnswer(conn, status=page["status"], content_type=page["content_type"], data=page["data"])
                     else:
                         sendAnswer(conn, content_type=page_info[1], data=pageEngine.readFile(page_info[2]))
+
                 elif page_info[0] == "redirection" and len(page_info) == 2:
                     sendAnswer(conn, status="308 Permanent Redirect", redirection=page_info[1])
+
                 elif page_info[0] == "function" and len(page_info) == 2:
                     if page_info[1].__code__.co_argcount == 2:
                         page_data = page_info[1](head_request, body_request)
+
+                    elif page_info[1].__code__.co_argcount == 1:
+                        log.write("Handed over HEAD to argument handler function", "W")
+                        page_data = page_info[1](head_request)
+
                     elif page_info[1].__code__.co_argcount == 0:
                         log.write("Handler function arguments is empty", "W")
                         page_data = page_info[1]()
+
                     else:
                         raise TypeError
 

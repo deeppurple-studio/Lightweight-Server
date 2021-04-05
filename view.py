@@ -12,8 +12,15 @@ def about(head, body):
         return generateCustomAnswer(status="404 Not Found", data=b"")
 
 
+urls_GET = {
+    "/index.html": ("file", "text/html;charset=utf-8", "index.html"),
+    "/": ("redirection", "/index.html"),
+
+    "/about": ("function", about)
+}
+
 # Добавляем функцию в структуру сайта
-serverConfig.SITE_STRUCTURE["GET"].update({"/about": ("function", about)})
+serverConfig.SITE_STRUCTURE["GET"].update(urls_GET)
 
 # Для добавления целой папки в карту сайта (автоматическое обновление не работает, требуется перезапуск сервера):
-#SITE_STRUCTURE["GET"].update(pageEngine.generateFilesTreeFromFolder("<путь_до_папки_внутри_siteDirectory>"))
+# SITE_STRUCTURE["GET"].update(pageEngine.generateFilesTreeFromFolder("<путь_до_папки_внутри_siteDirectory>"))

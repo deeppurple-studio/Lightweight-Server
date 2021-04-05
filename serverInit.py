@@ -60,7 +60,7 @@ def eventLoop():
                 acceptConnection(sock)
             else:
                 try:
-                    handlers.parseHandler(sock)
+                    handlers.getDataFromClientHandler(sock)
                     clearResource(sock)
                 except ConnectionResetError:
                     log.write("Подключение закрыто со стороны клиента", "W")
