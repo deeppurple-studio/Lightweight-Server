@@ -68,11 +68,13 @@ serverConfig.SITE_STRUCTURE["GET"].update(urls_GET)
 ```python
 # view.py
 from pageEngine import generateCustomAnswer
+import serverConfig
 
+...
 
 def about():
     # Можно добавить два аргумента в функцию и получить запросы HEAD и BODY
-    send_data = "<h1>About</h1>".encode()  # Данные обязательно должны конвертированы в строке байтов
+    send_data = "<h1>About</h1>".encode()  # Данные обязательно должны конвертированы в строку байтов
 
     return generateCustomAnswer(content_type="text/html", data=send_data)
 
